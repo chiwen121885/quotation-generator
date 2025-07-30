@@ -18,8 +18,8 @@ prime價目表 = {
         180: {60: None, 80: 16100}
     },
     'prime三節': {
-        100: {60: 12990, 80: None}, 
-        120: {60: 12990, 80: 13500}, 
+        100: {60: 15490, 80: None}, 
+        120: {60: 15490, 80: 13500}, 
         150: {60: 13900, 80: 14500}, 
         180: {60: None, 80: 16100}
     },
@@ -30,10 +30,10 @@ prime價目表 = {
         180: {60: None, 80: 16100}
     },
     'prime三節黑': {
-        100: {60: 12990, 80: None}, 
-        120: {60: 12990, 80: 13500}, 
-        150: {60: 13900, 80: 14500}, 
-        180: {60: None, 80: 16100}
+        100: {60: 15490, 80: None}, 
+        120: {60: 15490, 80: 16000}, 
+        150: {60: 16400, 80: 17000}, 
+        180: {60: None, 80: 18600}
     },
     'prime二節白': {
         100: {60: 12990, 80: None}, 
@@ -42,10 +42,10 @@ prime價目表 = {
         180: {60: None, 80: 16100}
     },
     'prime三節白': {
-        100: {60: 12990, 80: None}, 
-        120: {60: 12990, 80: 13500}, 
-        150: {60: 13900, 80: 14500}, 
-        180: {60: None, 80: 16100}
+        100: {60: 15490, 80: None}, 
+        120: {60: 15490, 80: 16000}, 
+        150: {60: 16400, 80: 17000}, 
+        180: {60: None, 80: 18600}
     }
 }
 
@@ -134,11 +134,11 @@ force價目表 = {
 #規格品琥珀木價目表
 規格琥珀木價目表={
     (50,70):{
-        (120,149.9):9800,
-        (150,179.9):12500,
-        (180,209.9):14500,
-        (210,239.9):16500,
-        (240,240):18500
+        (90,120):9800,
+        (120.1,150):12500,
+        (150.1,180):14500,
+        (180.1,210):16500,
+        (210.1,240):18500
     },
     (71,90):{
         (120,149.9):11500,
@@ -158,7 +158,7 @@ force價目表 = {
          'mini三節':12000,'mini三節黑':12000,'mini三節白':12000,
          'mini二節':9500,'mini二節黑':9500,'mini二節白':9500,
          '固定桌腳':3980,'固定黑腳':3980,'固定白腳':3980,
-         'force':23500,'force桌腳':23500,'force四柱桌腳':23500,'force四柱黑腳':23500,'force四柱白腳':23500,}
+         'force':23500,'force桌腳':23500,'force四柱桌腳':23500,'force四柱黑腳':23500,'force四柱白腳':23500,'':0}
 顏色_list={'':0,'纖維板':0,'菸草橡木':0,'雪白柚木':0,'密西根楓木':0,'北歐白橡木':0,'典雅胡桃木':0,'歐風胡桃木':0,'黑':0,'白':0,'電競':0,'加拿大楓木':0, 
          '蜂巢板':1500,'黑雲岩':1500,'白雲岩':1500,'泥灰岩':1500,'安藤清水模':1500,'台灣柚木':1500,'北海道榆木':1500,'維吉尼亞楓木':1500,'安德森雪松':1500,'哥倫比亞胡桃':1500,}
 形狀_list={'':0,'四方前上斜':0,'弧度上斜':0,'四方全平':0,'前凹':800,'後凹':800,'前凹+後凹':800,'小圓弧後凹':800,'四方前上斜+後凹':800,'四方前上斜+小圓弧後凹':800,'四角導圓':800}
@@ -207,9 +207,6 @@ while True:
                         prime升降桌price = float(prime價目表[桌腳][桌寬][桌深])
                         顏色price=顏色_list[顏色]
                         形狀price=形狀_list[形狀]
-                        if 桌寬 == 100 and 桌深 == 60:
-                            print('此報價有誤勿報，請用訂製查詢!!!')
-                            continue
                     except Exception as e:
                         print('輸入錯誤，原因:', e)
                     else:
@@ -275,8 +272,31 @@ while True:
                 total=price+桌腳price+顏色price+形狀price
                 
                 print('和您報價')
-                if price == 0:
-                    print('請修改訂製尺寸，桌深最小50')
+                if 桌腳price == 0 and 顏色price != 0 and 形狀price != 0:
+                    total = total + 400
+                    print(f'單購桌板訂{format_width_number(桌寬)}*{桌深}*4{顏色}({形狀})={total}')
+                    print('\n''備註:')
+                    print('1. 以上金額含運(不含宜花東地區)、不含安裝')
+                    print('2. 訂製約45天(含假日)')
+                    print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')                     
+                elif 桌腳price == 0 and 顏色price != 0:
+                    total = total + 400
+                    print(f'單購桌板訂{format_width_number(桌寬)}*{桌深}*4{顏色}({形狀})={total}')
+                    print('請自行判斷是否為訂製!!')
+                    print('\n''備註:')
+                    print('1. 以上金額含運(不含宜花東地區)、不含安裝')
+                    print('2. 訂製約35天(含假日)')
+                    print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主') 
+                elif 桌腳price == 0:
+                    total = total + 200
+                    print(f'單購桌板訂{format_width_number(桌寬)}*{桌深}{顏色}({形狀})={total}')
+                    print('請自行判斷是否為訂製!!')
+                    print('\n''備註:')
+                    print('1. 以上金額含運(不含宜花東地區)、不含安裝')
+                    print('2. 訂製約35天(含假日)')
+                    print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主') 
+                elif price == 0:
+                    print('訂製尺寸有誤，注意桌深最小50')
                 elif 桌寬<110 and (桌腳=='prime三節' or 桌腳=='prime二節' or 桌腳=='prime三節黑' or 桌腳=='prime二節黑'or 桌腳=='prime三節白' or 桌腳=='prime三節灰'or 桌腳=='prime二節灰') and 桌深<57.5:
                     桌腳=桌腳+'(短版+短側片+腳底座45公分)'
                     if 顏色price != 0 and 形狀price != 0:
@@ -285,7 +305,7 @@ while True:
                             print('\n''備註:')
                             print('1. 以上金額含運(不含宜花東地區)、不含安裝')
                             print('2. 訂製約45天(含假日)')
-                            print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
+                            print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主') 
                         else:
                             print('蜂巢板不可做凹!!')
                     elif 顏色price != 0:
@@ -493,18 +513,26 @@ while True:
                     except Exception as e:
                         print('輸入錯誤，原因:', e)
                     else:
+                        if 桌腳 == '':
+                            桌板price=round(桌寬*桌深*厚度/2700*木種成本單價list[木種]*木種對客單價乘積list[木種],-2)
+                            total=桌板price+400
+                            print('和您報價')
+                            print('(製材所)-單購桌板訂%3.0f*%3.0f*%1.1f%s=%5.0f' % (桌寬,桌深,厚度,木種,total))
+                            print('\n''備註:')
+                            print('1. 以上金額含運(不含宜花東地區)、不含安裝')
+                            print('2. 訂製約45工作天')
+                            print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
                         if 桌深 >= 81 and 厚度<=2.7:
-                            print('無法製作!!桌深厚度81cm以上，厚度需為2.7以上')
+                            print('無法製作!!桌深厚度81cm以上，厚度需為3.3以上')
                         else:
                             桌板price=round(桌寬*桌深*厚度/2700*木種成本單價list[木種]*木種對客單價乘積list[木種],-2)
                             total=桌板price+桌腳price
                             print('和您報價')
                             print('(製材所)-訂%3.0f*%3.0f*%1.1f%s+%s=%5.0f' % (桌寬,桌深,厚度,木種,桌腳,total))
-    
-                        print('\n''備註:')
-                        print('1. 1.以上金額含運(不含宜花東地區)、不含安裝')
-                        print('2. 訂製約45工作天')
-                        print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
+                            print('\n''備註:')
+                            print('1. 以上金額含運(不含宜花東地區)、不含安裝')
+                            print('2. 訂製約45工作天')
+                            print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
                 elif 木種 == '琥珀木':
                     try:
                         桌寬=float(input('請輸入桌寬:'))
@@ -530,14 +558,22 @@ while True:
                     except Exception as e:
                         print('輸入錯誤，原因:', e)
                     else:
-                        total=桌板price+桌腳price
-                        print('和您報價')
-                        print('(製材所)-訂%3.0f*%3.0f*%1.1f%s+%s=%5.0f' % (桌寬,桌深,厚度,木種,桌腳,total))
-    
-                        print('\n''備註:')
-                        print('1. 1.以上金額含運(不含宜花東地區)、不含安裝')
-                        print('2. 訂製約45工作天')
-                        print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
+                        if 桌腳 == '':
+                            total=桌板price+400
+                            print('和您報價')
+                            print('(製材所)-單購桌板訂%3.0f*%3.0f*%1.1f%s=%5.0f' % (桌寬,桌深,厚度,木種,total))
+                            print('\n''備註:')
+                            print('1. 1.以上金額含運(不含宜花東地區)、不含安裝')
+                            print('2. 訂製約45工作天')
+                            print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
+                        else:
+                            total=桌板price+桌腳price
+                            print('和您報價')
+                            print('(製材所)-訂%3.0f*%3.0f*%1.1f%s+%s=%5.0f' % (桌寬,桌深,厚度,木種,桌腳,total))
+                            print('\n''備註:')
+                            print('1. 1.以上金額含運(不含宜花東地區)、不含安裝')
+                            print('2. 訂製約45工作天')
+                            print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
                 else:
                     print('木種輸入錯誤!!')
 
@@ -554,6 +590,7 @@ while True:
                 custom_name = input('請輸入姓名: ')
                 custom_product = input('請輸入商品名稱: ')
                 custom_price = int(input('請輸入價格: '))
+                custom_sku = input('請輸入物料(CD01/CD02):')
                 custom_url_code = input('請輸入連結編碼: ')
             except Exception as e:
                 print('輸入錯誤，原因:', e)
@@ -567,10 +604,13 @@ while True:
                         "category_ids":[
                             "5f3e6edecbccfd003c3fc43f","6620f0d9de0f7400174633cd"
                         ],
+                        "summary_translations": {
+                            "zh-hant": f"🔺纖維板/蜂巢板(四方全平)需訂製約 35 天"'\n'f"🔺蜂巢板(四角導圓)/製材所實木桌板需訂製約 45 天"'\n'f"🔺若為規格品，則依訂單順序行程安排"
+                        },
                         "price": 99999,  # 原價，可視情況調整
                         "price_sale": custom_price,
                         "unlimited_quantity": True,
-                        "sku": "CD01",
+                        "sku": custom_sku,
                         "weight": 50,
                         "status": "hidden",
                         "retail_status":"draft",
@@ -580,15 +620,10 @@ while True:
                         "images": [
                             "SHOPLINE_IMAGES"
                         ],
-                        "link": custom_url_code,
                         "description_translations": {
-                            "zh-hant": """
-                <div style="text-align:center;">
-                  <img src="https://img.shoplineapp.com/media/image_clips/686794201af985000a603a8f/original.jpg?1751618592"
-                       style="max-width:100%;display:block;margin:auto;">
-                </div>
-                """
-                        }
+                            "zh-hant": '<div align="center"><img src="https://img.shoplineapp.com/media/image_clips/686794201af985000a603a8f/original.jpg?1751618592" width="800"></div>'
+                        },
+                        "link": custom_url_code
                     }
                 }
 
@@ -599,6 +634,7 @@ while True:
                 if response.status_code == 201:
                     base_url = 'https://www.funtetw.com/products/'
                     print(f'✅ 已生成連結：{base_url}{custom_url_code}')
+
                 else:
                     print(f'❌ 建立失敗，狀態碼：{response.status_code}')
                     print(response.text)
