@@ -6,6 +6,8 @@ import pandas as pd
 from pathlib import Path
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP, getcontext
+import random
+import string
 
 getcontext().prec = 10  # 精度足夠即可
 
@@ -184,7 +186,7 @@ force價目表 = {
          'force':23500,'force桌腳':23500,'force四柱桌腳':23500,'force四柱黑腳':23500,'force四柱白腳':23500,'':0}
 顏色_list={'':0,'纖維板':0,'菸草橡木':0,'雪白柚木':0,'密西根楓木':0,'北歐白橡木':0,'典雅胡桃木':0,'歐風胡桃木':0,'黑':0,'白':0,'電競':0,'加拿大楓木':0, 
          '蜂巢板':1500,'黑雲岩':1500,'白雲岩':1500,'泥灰岩':1500,'安藤清水模':1500,'台灣柚木':1500,'北海道榆木':1500,'維吉尼亞楓木':1500,'安德森雪松':1500,'哥倫比亞胡桃':1500,}
-形狀_list={'':0,'四方前上斜':0,'弧度上斜':0,'四方全平':0,'前凹':800,'後凹':800,'前凹+後凹':800,'小圓弧後凹':800,'前凹+小圓弧後凹':800,'四方前上斜+後凹':800,'四方前上斜+小圓弧後凹':800}
+形狀_list={'':0,'四方前上斜':0,'弧度上斜':0,'四方全平':0,'前凹':800,'後凹':800,'前凹+後凹':800,'小圓弧後凹':800,'前凹+小圓弧後凹':800,'四方前上斜+後凹':800,'四方前上斜+小圓弧後凹':800, '四角導圓':800}
 製材所形狀_list={'':0,'四方全平':0,'四角導圓':0,'前自然邊':0,'後自然邊':0,'前後自然邊':0,'1號單邊上斜':0,'2號單邊上斜':0,'1號單邊上斜+四角導圓':0,'2號單邊上斜+四角導圓':0,'1號前後上斜':0,'2號前後上斜':0,'前凹':1500,'後凹':500,'前凹+後凹':2000}
          
 while True:
@@ -1087,11 +1089,12 @@ while True:
                 custom_product = input('請輸入商品名稱: ')
                 custom_price = int(input('請輸入價格: '))
                 custom_sku = input('請輸入物料(CD01/CD02):')
-                custom_url_code = input('請輸入連結編碼: ')
+                #custom_url_code = input('請輸入連結編碼: ')
             except Exception as e:
                 print('輸入錯誤，原因:', e)
             else:
-
+                # 自動產生亂碼連結（14碼）
+                custom_url_code = ''.join(random.choices(string.ascii_lowercase + string.digits, k=14))
                 payload = {
                     "product": {
                         "title_translations": {
