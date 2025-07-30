@@ -166,72 +166,75 @@ force價目表 = {
 while True:
     print('\n')
     try:
-       報價 =input('請輸入mini或prime或force或訂製或製材所或下單:')
+       報價 =input('請輸入規格或訂製或製材所或下單:')
     except Exception as e:
         print('輸入錯誤，原因:', e)
     else:
 
-        if 報價 == 'mini':
+        if 報價 == '規格':
             try:
                 桌寬 = float(input('請輸入桌寬:'))
-                桌深 = float(input('桌深請輸入60:'))
+                桌深 = float(input('請輸入桌深:'))
                 桌腳 = input('請輸入桌腳:')
                 顏色 = input('請輸入顏色:')
                 形狀 = input('請輸入形狀:')
 
-                mini升降桌price = float(mini價目表[桌腳][桌寬])
                 顏色price=顏色_list[顏色]
-                形狀price=形狀_list[形狀]   
-            except Exception as e:
-                print('輸入錯誤，原因:', e) 
-            else:
-                total=mini升降桌price+顏色price+形狀price
-
-                print('和您報價')
-                print('%3.0f*%2.0f%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))    
-                
-        elif 報價 == 'prime':
-            try:
-                桌寬 = float(input('請輸入桌寬:'))
-                桌深 = float(input('請輸入桌深:'))
-                桌腳=input('請輸入桌腳:')
-                顏色=input('請輸入顏色:')
-                形狀=input('請輸入形狀:')
-    
-                prime升降桌price = float(prime價目表[桌腳][桌寬][桌深])
-                顏色price=顏色_list[顏色]
-                形狀price=形狀_list[形狀]
+                形狀price=形狀_list[形狀]  
+                桌腳price=桌腳_list[桌腳]
             except Exception as e:
                 print('輸入錯誤，原因:', e)
-            else:
-                total=prime升降桌price+顏色price+形狀price
-                if 45<桌深<=60:
-                    桌腳=桌腳+'(60)'
-
-                print('和您報價')
-                print('%3.0f*%2.0f%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))
-    
-        elif 報價 == 'force':
-            try:
-                桌寬 = float(input('請輸入桌寬:'))
-                桌深 = float(input('請輸入桌深:'))
-                桌腳=input('請輸入桌腳:')
-                顏色=input('請輸入顏色:')
-                形狀=input('請輸入形狀:')
-    
-                force升降桌price = float(force價目表[桌寬][桌深])
-                顏色price=顏色_list[顏色]
-                形狀price=形狀_list[形狀]
-            except Exception as e:
-                print('輸入錯誤，原因:', e)
-            else:
-                total=force升降桌price+顏色price+形狀price
+            else:       
+                if 桌腳 == 'mini三節' or 桌腳 == 'mini二節' or 桌腳 == 'mini三節黑' or 桌腳 == 'mini三節白' or 桌腳 == 'mini二節黑' or 桌腳 == 'mini二節白':
+                    try:
+                        mini升降桌price = float(mini價目表[桌腳][桌寬])
+                        顏色price=顏色_list[顏色]
+                        形狀price=形狀_list[形狀] 
+                        
+                        if 桌深 != 60:
+                            print('mini規格桌深須為60!!!')
+                            continue
+                    except Exception as e:
+                        print('輸入錯誤，原因:', e) 
+                    else:
+                        total=mini升降桌price+顏色price+形狀price
         
-                print('和您報價')
-                if 顏色price != 0:
-                    print('訂%3.0f*%2.0f*4%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))
-                else:
-                    print('%3.0f*%2.0f%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))
+                        print('和您報價')
+                        print('%3.0f*%2.0f%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))  
+                    
+                elif 桌腳 == 'prime三節' or 桌腳 == 'prime二節' or 桌腳 == 'prime三節黑' or 桌腳 == 'prime三節白' or 桌腳 == 'prime二節黑' or 桌腳 == 'prime二節白':
+                    try:       
+                        prime升降桌price = float(prime價目表[桌腳][桌寬][桌深])
+                        顏色price=顏色_list[顏色]
+                        形狀price=形狀_list[形狀]
+                        if 桌寬 == 100 and 桌深 == 60:
+                            print('此報價有誤勿報，請用訂製查詢!!!')
+                            continue
+                    except Exception as e:
+                        print('輸入錯誤，原因:', e)
+                    else:
+                        total=prime升降桌price+顏色price+形狀price
+                        if 45<桌深<=60:
+                            桌腳=桌腳+'(60)'
+        
+                        print('和您報價')
+                        print('%3.0f*%2.0f%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))
+            
+                elif 桌腳 == 'force'or 桌腳 == 'force四柱桌腳' or 桌腳 == 'force四柱黑腳' or 桌腳 == 'force四柱白腳':
+                    try:
+                        force升降桌price = float(force價目表[桌寬][桌深])
+                        顏色price=顏色_list[顏色]
+                        形狀price=形狀_list[形狀]
+                    except Exception as e:
+                        print('輸入錯誤，原因:', e)
+                    else:
+                        total=force升降桌price+顏色price+形狀price
+                
+                        print('和您報價')
+                        if 顏色price != 0:
+                            print('訂%3.0f*%2.0f*4%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))
+                        else:
+                            print('%3.0f*%2.0f%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))
         
         elif 報價 == '訂製':
             try:
@@ -551,7 +554,6 @@ while True:
                 custom_name = input('請輸入姓名: ')
                 custom_product = input('請輸入商品名稱: ')
                 custom_price = int(input('請輸入價格: '))
-                custom_weight = int(input('請輸入重量：'))
                 custom_url_code = input('請輸入連結編碼: ')
             except Exception as e:
                 print('輸入錯誤，原因:', e)
@@ -569,7 +571,7 @@ while True:
                         "price_sale": custom_price,
                         "unlimited_quantity": True,
                         "sku": "CD01",
-                        "weight": custom_weight,
+                        "weight": 50,
                         "status": "hidden",
                         "retail_status":"draft",
                         "blacklisted_payment_ids": [
@@ -578,7 +580,15 @@ while True:
                         "images": [
                             "SHOPLINE_IMAGES"
                         ],
-                        "link": custom_url_code
+                        "link": custom_url_code,
+                        "description_translations": {
+                            "zh-hant": """
+                <div style="text-align:center;">
+                  <img src="https://img.shoplineapp.com/media/image_clips/686794201af985000a603a8f/original.jpg?1751618592"
+                       style="max-width:100%;display:block;margin:auto;">
+                </div>
+                """
+                        }
                     }
                 }
 
