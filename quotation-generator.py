@@ -4,7 +4,13 @@ import openpyxl
 from openpyxl.drawing.image import Image
 import pandas as pd
 from pathlib import Path
-from datetime import date
+from decimal import Decimal, ROUND_HALF_UP, getcontext
+
+getcontext().prec = 10  # 精度足夠即可
+
+def excel_round(value, digits=-2):
+    multiplier = Decimal('1e{}'.format(-digits))
+    return int((Decimal(value) / multiplier).quantize(0, rounding=ROUND_HALF_UP) * multiplier)
 
 mini價目表 = {
     'mini二節': { 90: 10900, 100:11200, 120: 11490, 150: 12400},
@@ -51,9 +57,20 @@ prime價目表 = {
         120: {60: 15490, 80: 16000}, 
         150: {60: 16400, 80: 17000}, 
         180: {60: None, 80: 18600}
+    },
+    'prime二節灰': {
+        100: {60: 12990, 80: None}, 
+        120: {60: 12990, 80: 13500}, 
+        150: {60: 13900, 80: 14500}, 
+        180: {60: None, 80: 16100}
+    },
+    'prime三節灰': {
+        100: {60: 15490, 80: None}, 
+        120: {60: 15490, 80: 16000}, 
+        150: {60: 16400, 80: 17000}, 
+        180: {60: None, 80: 18600}
     }
 }
-
 force價目表 = {
     150: {80: 26000, 90: 26300},
     160: {80: 26500, 90: 26800},
@@ -158,8 +175,8 @@ force價目表 = {
 木種成本單價list={'栓木脂接':700,'栓木直拼':900,'白橡木脂接':850,'白橡木直拼':1330}
 木種對客單價乘積list={'栓木脂接':1.5,'栓木直拼':1.5,'白橡木脂接':1.4,'白橡木直拼':1.4,'琥珀木':1.6}
 
-桌腳_list={'prime三節':13500,'prime三節黑':13500,'prime三節白':13500,
-         'prime二節':11000,'prime二節黑':11000,'prime二節白':11000,
+桌腳_list={'prime三節':13500,'prime三節黑':13500,'prime三節白':13500,'prime三節灰':13500,
+         'prime二節':11000,'prime二節黑':11000,'prime二節白':11000,'prime二節灰':11000,
          'mini三節':12000,'mini三節黑':12000,'mini三節白':12000,
          'mini二節':9500,'mini二節黑':9500,'mini二節白':9500,
          '固定桌腳':3980,'固定黑腳':3980,'固定白腳':3980,
@@ -207,7 +224,7 @@ while True:
                         print('和您報價')
                         print('%3.0f*%2.0f%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))  
                     
-                elif 桌腳 == 'prime三節' or 桌腳 == 'prime二節' or 桌腳 == 'prime三節黑' or 桌腳 == 'prime三節白' or 桌腳 == 'prime二節黑' or 桌腳 == 'prime二節白':
+                elif 桌腳 == 'prime三節' or 桌腳 == 'prime二節' or 桌腳 == 'prime三節黑' or 桌腳 == 'prime三節白' or 桌腳 == 'prime三節灰' or 桌腳 == 'prime二節黑' or 桌腳 == 'prime二節白' or 桌腳 =='prime二節灰':
                     try:       
                         prime升降桌price = float(prime價目表[桌腳][桌寬][桌深])
                         顏色price=顏色_list[顏色]
@@ -222,7 +239,7 @@ while True:
                         print('和您報價')
                         print('%3.0f*%2.0f%s(%s)+%s=%5.0f'%(桌寬,桌深,顏色,形狀,桌腳,total))
             
-                elif 桌腳 == 'force'or 桌腳 == 'force四柱桌腳' or 桌腳 == 'force四柱黑腳' or 桌腳 == 'force四柱白腳':
+                elif 桌腳 == 'force' or 桌腳 =='force桌腳' or 桌腳 == 'force四柱桌腳' or 桌腳 == 'force四柱黑腳' or 桌腳 == 'force四柱白腳':
                     try:
                         force升降桌price = float(force價目表[桌寬][桌深])
                         顏色price=顏色_list[顏色]
@@ -506,34 +523,96 @@ while True:
             except Exception as e:
                 print('輸入錯誤，原因:', e)
             else:
-
-                if  (木種 =='栓木脂接' or 木種 =='栓木直拼' or 木種 =='白橡木脂接' or 木種 =='白橡木直拼'):
+                if 木種 =='栓木脂接' or 木種 =='栓木直拼':
                     try:
                         桌寬=float(input('請輸入桌寬:'))
                         桌深=float(input('請輸入桌深:'))
-                        厚度=float(input('請輸入厚度(若白橡木直拼3.3請輸入3.5):'))
+                        厚度=float(input('請輸入厚度(2.7/3.5/4.5):'))
                         桌腳=input('請輸入桌腳:') 
+                        製材所形狀=input('請輸入桌板形狀:')
                         桌腳price=桌腳_list[桌腳] 
+                        製材所形狀price=製材所形狀_list[製材所形狀]
 
+                        # ✅ 加入防呆：若輸入厚度為 3.3，自動修正為 3.5
+                        if abs(厚度 - 3.3) < 0.05:
+                            厚度 = 3.5
                     except Exception as e:
                         print('輸入錯誤，原因:', e)
                     else:
                         if 桌腳 == '':
-                            桌板price=round(桌寬*桌深*厚度/2700*木種成本單價list[木種]*木種對客單價乘積list[木種],-2)
-                            total=桌板price+400
+                            # 這一行替換為 Decimal 計算（避免 float 誤差）
+                            基礎價格 = Decimal(str(桌寬)) * Decimal(str(桌深)) * Decimal(str(厚度)) / Decimal('2700') * Decimal(str(木種成本單價list[木種])) * Decimal(str(木種對客單價乘積list[木種]))
+                            桌板price = excel_round(基礎價格, -2)
+                            total=桌板price+製材所形狀price+400
+
+                            if 製材所形狀 =='':
+                                製材所形狀 = '四方全平'
                             print('和您報價')
-                            print('(製材所)-單購桌板訂%3.0f*%3.0f*%1.1f%s=%5.0f' % (桌寬,桌深,厚度,木種,total))
+                            print('(製材所)-單購桌板訂%3.0f*%3.0f*%1.1f%s(%s)=%5.0f' % (桌寬,桌深,厚度,木種,製材所形狀,total))
                             print('\n''備註:')
                             print('1. 以上金額含運(不含宜花東地區)、不含安裝')
                             print('2. 訂製約45工作天')
                             print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
-                        if 桌深 >= 81 and 厚度<=2.7:
+                        elif 桌深 >= 81 and 厚度<=2.7:
                             print('無法製作!!桌深厚度81cm以上，厚度需為3.3以上')
                         else:
-                            桌板price=round(桌寬*桌深*厚度/2700*木種成本單價list[木種]*木種對客單價乘積list[木種],-2)
-                            total=桌板price+桌腳price
+                            基礎價格 = Decimal(str(桌寬)) * Decimal(str(桌深)) * Decimal(str(厚度)) / Decimal('2700') * Decimal(str(木種成本單價list[木種])) * Decimal(str(木種對客單價乘積list[木種]))
+                            桌板price = excel_round(基礎價格, -2)
+                            total=桌板price+製材所形狀price+桌腳price
+
+                            if 製材所形狀 =='':
+                                製材所形狀 = '四方全平'
                             print('和您報價')
-                            print('(製材所)-訂%3.0f*%3.0f*%1.1f%s+%s=%5.0f' % (桌寬,桌深,厚度,木種,桌腳,total))
+                            print('(製材所)-訂%3.0f*%3.0f*%1.1f%s(%s)+%s=%5.0f' % (桌寬,桌深,厚度,木種,製材所形狀,桌腳,total))
+                            print('\n''備註:')
+                            print('1. 以上金額含運(不含宜花東地區)、不含安裝')
+                            print('2. 訂製約45工作天')
+                            print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
+                elif   木種 =='白橡木脂接' or 木種 =='白橡木直拼':
+                    try:
+                        桌寬=float(input('請輸入桌寬:'))
+                        桌深=float(input('請輸入桌深:'))
+                        厚度=float(input('請輸入厚度(2.7/3.3/4.5):'))
+                        桌腳=input('請輸入桌腳:') 
+                        製材所形狀=input('請輸入桌板形狀:')
+                        桌腳price=桌腳_list[桌腳] 
+                        製材所形狀price=製材所形狀_list[製材所形狀]
+
+                        #✅ 加入防呆：若輸入厚度為 3.3，自動修正為 3.5
+                        if abs(厚度 - 3.3) < 0.05:
+                            厚度 = 3.5
+                    except Exception as e:
+                        print('輸入錯誤，原因:', e)
+                    else:
+                        if 桌腳 == '':
+                            # 這一行替換為 Decimal 計算（避免 float 誤差）
+                            基礎價格 = Decimal(str(桌寬)) * Decimal(str(桌深)) * Decimal(str(厚度)) / Decimal('2700') * (Decimal(str(木種成本單價list[木種])) * Decimal(str(木種對客單價乘積list[木種])))
+                            桌板price = excel_round(基礎價格, -2)
+                            total=桌板price+製材所形狀price+400
+
+                            if 厚度 == 3.5:
+                                厚度 = 3.3
+                            if 製材所形狀 =='':
+                                製材所形狀 = '四方全平'
+                            print('和您報價')
+                            print('(製材所)-單購桌板訂%3.0f*%3.0f*%1.1f%s(%s)=%5.0f' % (桌寬,桌深,厚度,木種,製材所形狀,total))
+                            print('\n''備註:')
+                            print('1. 以上金額含運(不含宜花東地區)、不含安裝')
+                            print('2. 訂製約45工作天')
+                            print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
+                        elif 桌深 >= 81 and 厚度<=2.7:
+                            print('無法製作!!桌深厚度81cm以上，厚度需為3.3以上')
+                        else:
+                            基礎價格 = Decimal(str(桌寬)) * Decimal(str(桌深)) * Decimal(str(厚度)) / Decimal('2700') * Decimal(str(木種成本單價list[木種])) * Decimal(str(木種對客單價乘積list[木種]))
+                            桌板price = excel_round(基礎價格, -2)
+                            total=桌板price+製材所形狀price+桌腳price
+
+                            if 厚度 == 3.5:
+                                厚度 = 3.3
+                            if 製材所形狀 =='':
+                                製材所形狀 = '四方全平'
+                            print('和您報價')
+                            print('(製材所)-訂%3.0f*%3.0f*%1.1f%s(%s)+%s=%5.0f' % (桌寬,桌深,厚度,木種,製材所形狀,桌腳,total))
                             print('\n''備註:')
                             print('1. 以上金額含運(不含宜花東地區)、不含安裝')
                             print('2. 訂製約45工作天')
@@ -544,6 +623,7 @@ while True:
                         桌深=float(input('請輸入桌深:'))
                         厚度=float(input('厚度請輸入4.5:'))
                         桌腳=input('請輸入桌腳:') 
+                        製材所形狀=input('請輸入桌板形狀:')
              
                         for wood_depth_range, wood_width_dict in 規格琥珀木價目表.items():
                             wood_depth_start, wood_depth_end = wood_depth_range
@@ -560,11 +640,14 @@ while True:
                             print('無價格')
 
                         桌板price = price*木種對客單價乘積list[木種]
+                        製材所形狀price=製材所形狀_list[製材所形狀]
                     except Exception as e:
                         print('輸入錯誤，原因:', e)
                     else:
                         if 桌腳 == '':
-                            total=桌板price+400
+                            total=桌板price+製材所形狀price+400
+                            if 製材所形狀 =='':
+                                製材所形狀 ='四方全平'
                             print('和您報價')
                             print('(製材所)-單購桌板訂%3.0f*%3.0f*%1.1f%s=%5.0f' % (桌寬,桌深,厚度,木種,total))
                             print('\n''備註:')
@@ -572,9 +655,11 @@ while True:
                             print('2. 訂製約45工作天')
                             print('3. 製程為工廠製作時間，不包含後續的配送與安裝，實際配送日以通知為主')
                         else:
-                            total=桌板price+桌腳price
+                            total=桌板price+製材所形狀price+桌腳price
+                            if 製材所形狀 =='':
+                                製材所形狀 ='四方全平'
                             print('和您報價')
-                            print('(製材所)-訂%3.0f*%3.0f*%1.1f%s+%s=%5.0f' % (桌寬,桌深,厚度,木種,桌腳,total))
+                            print('(製材所)-訂%3.0f*%3.0f*%1.1f%s(%s)+%s=%5.0f' % (桌寬,桌深,厚度,木種,製材所形狀,桌腳,total))
                             print('\n''備註:')
                             print('1. 1.以上金額含運(不含宜花東地區)、不含安裝')
                             print('2. 訂製約45工作天')
@@ -584,10 +669,7 @@ while True:
 
         elif 報價 == '報價單':
             # === 0. 路徑設定 ===============================================
-            try:
-                base_dir = Path(__file__).resolve().parent  # 正常執行 .py 時
-            except NameError:
-                base_dir = Path.cwd()
+            base_dir = Path.cwd()
             TEMPLATE   = base_dir / "FUNTE電動升降桌報價單-空白報價單.xlsx"
             PRODUCT_DB = base_dir / "報價單產品.xlsx"
             
@@ -636,8 +718,8 @@ while True:
             
             # === 6. 寫產品列 & 圖片 =====================================
             for i, od in enumerate(orders):
-                row      = start_row + i
-                r        = od["row"]
+                row = start_row + i
+                r = od["row"]
             
                 #ws.cell(row, 1, r["Item No."])
                 ws.cell(row, 2, r["Description"])
